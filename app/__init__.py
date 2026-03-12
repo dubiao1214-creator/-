@@ -1,0 +1,1 @@
+"""Communication translator app package."""

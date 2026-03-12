@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>职能沟通翻译助手</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Cross-Function Briefing Console</p>
+          <h1>职能沟通翻译助手</h1>
+          <p class="hero-text">
+            把产品语言翻译成技术执行方案，也把技术结论翻译成业务价值表达。
+          </p>
+        </div>
+        <div class="hero-metrics">
+          <div class="metric-card">
+            <span class="metric-label">方向切换</span>
+            <strong>产品 -> 开发 / 开发 -> 产品</strong>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">输出方式</span>
+            <strong>SSE 流式生成</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel control-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">输入面板</p>
+            <h2>选择沟通方向</h2>
+          </div>
+
+          <div class="direction-switch" role="tablist" aria-label="翻译方向">
+            <button class="direction-btn active" data-direction="pm_to_dev" type="button">
+              产品 -> 开发
+            </button>
+            <button class="direction-btn" data-direction="dev_to_pm" type="button">
+              开发 -> 产品
+            </button>
+          </div>
+
+          <label class="field-label" for="sourceText">原始内容</label>
+          <textarea
+            id="sourceText"
+            placeholder="输入需求描述或技术方案，系统会按当前方向进行翻译。"
+          ></textarea>
+
+          <div class="panel-row">
+            <label class="checkbox-row">
+              <input id="autoDetect" type="checkbox" checked />
+              <span>自动识别场景并显示提示</span>
+            </label>
+            <button id="runButton" class="primary-btn" type="button">开始翻译</button>
+          </div>
+
+          <div class="examples">
+            <p class="examples-title">快速示例</p>
+            <button
+              class="example-chip"
+              data-direction="pm_to_dev"
+              data-text="我们需要一个智能推荐功能，提升用户停留时长"
+              type="button"
+            >
+              智能推荐需求
+            </button>
+            <button
+              class="example-chip"
+              data-direction="dev_to_pm"
+              data-text="我们优化了数据库查询，QPS提升了30%"
+              type="button"
+            >
+              数据库优化结论
+            </button>
+          </div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-header">
+            <p class="panel-kicker">结果面板</p>
+            <h2>流式翻译结果</h2>
+          </div>
+
+          <div class="status-strip">
+            <span id="directionBadge" class="status-badge">产品 -> 开发</span>
+            <span id="sceneBadge" class="status-badge muted">场景待识别</span>
+            <span id="modelBadge" class="status-badge muted">模型待连接</span>
+          </div>
+
+          <div id="feedback" class="feedback" aria-live="polite"></div>
+
+          <div class="result-grid">
+            <article class="result-card live-card">
+              <div class="card-header">
+                <h3>实时输出</h3>
+                <button id="copyButton" class="ghost-btn" type="button">复制结果</button>
+              </div>
+              <pre id="liveOutput" class="live-output">等待输入...</pre>
+            </article>
+
+            <article class="result-card structured-card">
+              <div class="card-header">
+                <h3>结构化视图</h3>
+              </div>
+              <div id="sectionCards" class="section-cards">
+                <p class="empty-state">模型完成输出后，这里会自动整理成结构化卡片。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
