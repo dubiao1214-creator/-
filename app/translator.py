@@ -49,6 +49,7 @@ class TranslatorService:
 
     @property
     def client(self) -> OpenAI:
+        # Delay client creation so validation/tests do not require a live API key.
         if self._client is None:
             self._client = OpenAI(
                 api_key=self.settings.deepseek_api_key,
@@ -65,6 +66,7 @@ class TranslatorService:
 
     async def stream_translation(self, payload: TranslationRequest):
         scene = detect_scene(payload.text) if payload.auto_detect else SceneType.unknown
+        # Send metadata first so the UI can update badges before content starts streaming.
         yield {
             "event": "meta",
             "data": {
@@ -88,5 +90,6 @@ class TranslatorService:
             yield {"event": "error", "data": {"message": "DeepSeek 调用失败，请检查 API Key 或网络配置。"}}
             return
 
+        # Keep a full copy so the client receives both incremental updates and a final stable result.
         final_text = "".join(parts)
         yield {"event": "done", "data": {"text": final_text}}

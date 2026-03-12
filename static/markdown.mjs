@@ -11,6 +11,7 @@ function renderInlineMarkdown(text) {
   const tokens = [];
   let output = escapeHtml(text);
 
+  // Protect inline code first so emphasis rules do not rewrite content inside backticks.
   output = output.replace(/`([^`]+)`/g, (_, code) => {
     const token = `__CODE_TOKEN_${tokens.length}__`;
     tokens.push(`<code>${code}</code>`);
@@ -66,6 +67,7 @@ export function renderMarkdown(markdown) {
     const trimmed = line.trim();
 
     if (trimmed.startsWith("```")) {
+      // Fence boundaries flush any pending rich text blocks before toggling code mode.
       flushParagraph();
       flushQuote();
       flushList();
@@ -184,6 +186,7 @@ export function buildStructuredCardsHtml(markdown) {
     return '<div class="empty-state">未识别到结构化章节。</div>';
   }
 
+  // Each second-level heading becomes a separate card so long responses stay scannable.
   return sections
     .map((section) => {
       const body = section.body.join("\n").trim();

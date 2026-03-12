@@ -53,6 +53,7 @@ function schedulePreviewRender(text) {
     return;
   }
 
+  // Streaming can arrive token-by-token; batch DOM work to the next animation frame.
   previewFrameId = window.requestAnimationFrame(() => {
     renderPreviewNow(state.previewText);
     previewFrameId = null;
@@ -133,6 +134,7 @@ async function streamTranslation() {
         if (event === "chunk") {
           state.liveText += data.text || "";
           liveOutput.textContent = state.liveText;
+          // Re-render the formatted preview while keeping the raw stream visible for debugging.
           schedulePreviewRender(state.liveText);
         }
 

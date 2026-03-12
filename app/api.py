@@ -22,6 +22,7 @@ async def translate_stream(
     translator_service: TranslatorService = Depends(get_translator_service),
 ) -> StreamingResponse:
     async def event_stream():
+        # The service yields structured events; the API layer only converts them to SSE wire format.
         async for item in translator_service.stream_translation(payload):
             yield format_sse_event(item["event"], item["data"])
 
