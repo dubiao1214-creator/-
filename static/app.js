@@ -1,7 +1,10 @@
+import { renderMarkdown } from "./markdown.mjs";
+
 const state = {
   direction: "pm_to_dev",
   finalText: "",
   liveText: "",
+  previewText: "",
 };
 
 const directionButtons = Array.from(document.querySelectorAll(".direction-btn"));
@@ -11,13 +14,19 @@ const autoDetect = document.querySelector("#autoDetect");
 const runButton = document.querySelector("#runButton");
 const copyButton = document.querySelector("#copyButton");
 const liveOutput = document.querySelector("#liveOutput");
-const sectionCards = document.querySelector("#sectionCards");
+const markdownPreview = document.querySelector("#markdownPreview");
 const feedback = document.querySelector("#feedback");
 const directionBadge = document.querySelector("#directionBadge");
 const sceneBadge = document.querySelector("#sceneBadge");
 const modelBadge = document.querySelector("#modelBadge");
-const heroMode = document.querySelector("#heroMode");
-const strategySummary = document.querySelector("#strategySummary");
+const streamState = document.querySelector("#streamState");
+
+let previewFrameId = null;
+
+function setStreamState(label, tone = "idle") {
+  streamState.textContent = label;
+  streamState.dataset.tone = tone;
+}
 
 function updateDirection(direction) {
   state.direction = direction;
@@ -25,67 +34,43 @@ function updateDirection(direction) {
   directionButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.direction === direction);
   });
-  const isPmToDev = direction === "pm_to_dev";
-  const directionText = isPmToDev ? "产品 -> 开发" : "开发 -> 产品";
-  directionBadge.textContent = directionText;
-  if (heroMode) {
-    heroMode.textContent = directionText;
-  }
-  if (strategySummary) {
-    strategySummary.textContent = isPmToDev
-      ? "当前方向会优先输出技术路径、依赖项与待确认问题。"
-      : "当前方向会优先解释用户体验、业务价值与风险边界。";
-  }
+  directionBadge.textContent = direction === "pm_to_dev" ? "产品 -> 开发" : "开发 -> 产品";
 }
 
-function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
-function renderSections(text) {
+function renderPreviewNow(text) {
   if (!text.trim()) {
-    sectionCards.innerHTML = '<p class="empty-state">模型完成输出后，这里会自动整理成结构化卡片。</p>';
+    markdownPreview.innerHTML = '<div class="empty-state">生成后这里会以 Markdown 格式实时呈现。</div>';
     return;
   }
 
-  const parts = text
-    .split("\n## ")
-    .map((part, index) => (index === 0 ? part : `## ${part}`))
-    .map((part) => part.trim())
-    .filter(Boolean);
+  markdownPreview.innerHTML = `<article class="markdown-doc">${renderMarkdown(text)}</article>`;
+}
 
-  const cards = parts
-    .map((part) => {
-      const lines = part.split("\n");
-      const title = lines[0].replace(/^##\s*/, "");
-      const content = lines.slice(1).join("\n").trim() || "暂无补充内容";
-      return `
-        <section class="section-card">
-          <h4>${escapeHtml(title)}</h4>
-          <p>${escapeHtml(content).replaceAll("\n", "<br />")}</p>
-        </section>
-      `;
-    })
-    .join("");
+function schedulePreviewRender(text) {
+  state.previewText = text;
 
-  sectionCards.innerHTML = cards || '<p class="empty-state">未能识别结构化标题，已保留在实时输出区。</p>';
+  if (previewFrameId) {
+    return;
+  }
+
+  previewFrameId = window.requestAnimationFrame(() => {
+    renderPreviewNow(state.previewText);
+    previewFrameId = null;
+  });
 }
 
 function resetResult() {
   state.finalText = "";
   state.liveText = "";
+  state.previewText = "";
   liveOutput.textContent = "正在等待模型输出...";
-  renderSections("");
+  renderPreviewNow("");
   feedback.textContent = "";
   sceneBadge.textContent = "场景待识别";
   sceneBadge.classList.add("muted");
   modelBadge.textContent = "模型待连接";
   modelBadge.classList.add("muted");
+  setStreamState("流式生成中", "streaming");
 }
 
 function applyMeta(data) {
@@ -148,24 +133,29 @@ async function streamTranslation() {
         if (event === "chunk") {
           state.liveText += data.text || "";
           liveOutput.textContent = state.liveText;
+          schedulePreviewRender(state.liveText);
         }
 
         if (event === "done") {
           state.finalText = data.text || state.liveText;
           liveOutput.textContent = state.finalText || "模型未返回内容。";
-          renderSections(state.finalText);
+          schedulePreviewRender(state.finalText);
+          setStreamState("已完成", "ready");
         }
 
         if (event === "error") {
           feedback.textContent = data.message || "翻译失败，请检查配置。";
           liveOutput.textContent = "模型调用失败。";
-          renderSections("");
+          renderPreviewNow("");
+          setStreamState("调用失败", "error");
         }
       });
     }
   } catch (error) {
     feedback.textContent = error.message || "翻译失败，请稍后重试。";
     liveOutput.textContent = "无法连接到后端服务。";
+    renderPreviewNow("");
+    setStreamState("连接失败", "error");
   } finally {
     runButton.disabled = false;
     runButton.textContent = "开始翻译";
@@ -193,3 +183,5 @@ copyButton.addEventListener("click", async () => {
 });
 
 updateDirection(state.direction);
+renderPreviewNow("");
+setStreamState("等待中", "idle");
