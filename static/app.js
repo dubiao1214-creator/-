@@ -16,13 +16,26 @@ const feedback = document.querySelector("#feedback");
 const directionBadge = document.querySelector("#directionBadge");
 const sceneBadge = document.querySelector("#sceneBadge");
 const modelBadge = document.querySelector("#modelBadge");
+const heroMode = document.querySelector("#heroMode");
+const strategySummary = document.querySelector("#strategySummary");
 
 function updateDirection(direction) {
   state.direction = direction;
+  document.body.dataset.direction = direction;
   directionButtons.forEach((button) => {
     button.classList.toggle("active", button.dataset.direction === direction);
   });
-  directionBadge.textContent = direction === "pm_to_dev" ? "产品 -> 开发" : "开发 -> 产品";
+  const isPmToDev = direction === "pm_to_dev";
+  const directionText = isPmToDev ? "产品 -> 开发" : "开发 -> 产品";
+  directionBadge.textContent = directionText;
+  if (heroMode) {
+    heroMode.textContent = directionText;
+  }
+  if (strategySummary) {
+    strategySummary.textContent = isPmToDev
+      ? "当前方向会优先输出技术路径、依赖项与待确认问题。"
+      : "当前方向会优先解释用户体验、业务价值与风险边界。";
+  }
 }
 
 function escapeHtml(text) {

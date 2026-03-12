@@ -51,4 +51,5 @@ def test_root_page_renders_app_shell():
 
     assert response.status_code == 200
     assert "职能沟通翻译助手" in response.text
-    assert "产品 -> 开发" in response.text
+    assert "Brief Desk" in response.text
+    assert "Review Board" in response.text

@@ -8,31 +8,75 @@
   </head>
   <body>
     <div class="page-shell">
+      <div class="ambient ambient-left" aria-hidden="true"></div>
+      <div class="ambient ambient-right" aria-hidden="true"></div>
+
       <header class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Cross-Function Briefing Console</p>
+        <div class="masthead">
+          <div class="issue-tag">
+            <span>Issue 01</span>
+            <span>Editorial Interface</span>
+          </div>
+          <p class="eyebrow">Cross-Function Translation Desk</p>
           <h1>职能沟通翻译助手</h1>
           <p class="hero-text">
-            把产品语言翻译成技术执行方案，也把技术结论翻译成业务价值表达。
+            把一句模糊需求整理成技术团队可执行的 brief，也把一段工程结论翻译成业务团队能拿去沟通的版本。
           </p>
         </div>
-        <div class="hero-metrics">
-          <div class="metric-card">
-            <span class="metric-label">方向切换</span>
-            <strong>产品 -> 开发 / 开发 -> 产品</strong>
-          </div>
-          <div class="metric-card">
-            <span class="metric-label">输出方式</span>
-            <strong>SSE 流式生成</strong>
+
+        <div class="hero-side">
+          <article class="lead-card">
+            <p class="card-kicker">Editorial Note</p>
+            <h2>从“说不清”到“讲得明白”</h2>
+            <p>
+              这个界面模拟的是一张跨团队审稿台：左边收需求原稿，右边生成面向另一角色的译稿，并把需要继续追问的问题单独拎出来。
+            </p>
+          </article>
+
+          <div class="headline-strip">
+            <div class="headline-chip">
+              <span class="chip-index">01</span>
+              <div>
+                <strong id="heroMode">产品 -> 开发</strong>
+                <p>角色语境切换</p>
+              </div>
+            </div>
+            <div class="headline-chip">
+              <span class="chip-index">02</span>
+              <div>
+                <strong>Streaming</strong>
+                <p>逐段生成，不必干等</p>
+              </div>
+            </div>
+            <div class="headline-chip">
+              <span class="chip-index">03</span>
+              <div>
+                <strong>Question List</strong>
+                <p>缺口信息自动补位</p>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
+      <section class="storyline">
+        <div class="storyline-label">Editor&apos;s Flow</div>
+        <div class="storyline-track">
+          <span>Receive raw brief</span>
+          <span>Reframe by audience</span>
+          <span>Surface missing details</span>
+          <span>Publish structured draft</span>
+        </div>
+      </section>
+
       <main class="workspace">
-        <section class="panel control-panel">
-          <div class="panel-header">
-            <p class="panel-kicker">输入面板</p>
-            <h2>选择沟通方向</h2>
+        <section class="desk-panel">
+          <div class="desk-header">
+            <div>
+              <p class="panel-kicker">Brief Desk</p>
+              <h2>原始输入台</h2>
+            </div>
+            <div class="desk-badge">Source Copy</div>
           </div>
 
           <div class="direction-switch" role="tablist" aria-label="翻译方向">
@@ -44,59 +88,92 @@
             </button>
           </div>
 
-          <label class="field-label" for="sourceText">原始内容</label>
-          <textarea
-            id="sourceText"
-            placeholder="输入需求描述或技术方案，系统会按当前方向进行翻译。"
-          ></textarea>
+          <div class="desk-layout">
+            <div class="editor-form">
+              <label class="field-label" for="sourceText">原始内容</label>
+              <textarea
+                id="sourceText"
+                placeholder="输入需求描述或技术方案，系统会按当前方向进行翻译。"
+              ></textarea>
 
-          <div class="panel-row">
-            <label class="checkbox-row">
-              <input id="autoDetect" type="checkbox" checked />
-              <span>自动识别场景并显示提示</span>
-            </label>
-            <button id="runButton" class="primary-btn" type="button">开始翻译</button>
+              <div class="panel-row">
+                <label class="checkbox-row">
+                  <input id="autoDetect" type="checkbox" checked />
+                  <span>自动识别场景并显示提示</span>
+                </label>
+                <button id="runButton" class="primary-btn" type="button">开始翻译</button>
+              </div>
+            </div>
+
+            <aside class="strategy-card">
+              <p class="card-kicker">Translation Brief</p>
+              <h3>这次译稿会重点关注什么</h3>
+              <ul class="strategy-list">
+                <li>保留输入原意，不让业务目标丢失。</li>
+                <li>自动补全另一角色最关心的信息缺口。</li>
+                <li>把推断和事实拆开写，减少误解。</li>
+              </ul>
+              <div class="strategy-footnote" id="strategySummary">
+                当前方向会优先输出技术路径、依赖项与待确认问题。
+              </div>
+            </aside>
           </div>
 
           <div class="examples">
-            <p class="examples-title">快速示例</p>
-            <button
-              class="example-chip"
-              data-direction="pm_to_dev"
-              data-text="我们需要一个智能推荐功能，提升用户停留时长"
-              type="button"
-            >
-              智能推荐需求
-            </button>
-            <button
-              class="example-chip"
-              data-direction="dev_to_pm"
-              data-text="我们优化了数据库查询，QPS提升了30%"
-              type="button"
-            >
-              数据库优化结论
-            </button>
+            <div class="examples-head">
+              <p class="examples-title">Quick Clips</p>
+              <span>一键填充典型场景</span>
+            </div>
+            <div class="example-row">
+              <button
+                class="example-chip"
+                data-direction="pm_to_dev"
+                data-text="我们需要一个智能推荐功能，提升用户停留时长"
+                type="button"
+              >
+                智能推荐需求
+              </button>
+              <button
+                class="example-chip"
+                data-direction="dev_to_pm"
+                data-text="我们优化了数据库查询，QPS提升了30%"
+                type="button"
+              >
+                数据库优化结论
+              </button>
+            </div>
           </div>
         </section>
 
-        <section class="panel result-panel">
-          <div class="panel-header">
-            <p class="panel-kicker">结果面板</p>
-            <h2>流式翻译结果</h2>
+        <section class="board-panel">
+          <div class="desk-header">
+            <div>
+              <p class="panel-kicker">Review Board</p>
+              <h2>译稿审阅台</h2>
+            </div>
+            <div class="desk-badge">Structured Draft</div>
           </div>
 
-          <div class="status-strip">
-            <span id="directionBadge" class="status-badge">产品 -> 开发</span>
-            <span id="sceneBadge" class="status-badge muted">场景待识别</span>
-            <span id="modelBadge" class="status-badge muted">模型待连接</span>
+          <div class="status-board">
+            <div class="status-board-head">
+              <span class="board-title">Live Status</span>
+              <span class="board-rule"></span>
+            </div>
+            <div class="status-strip">
+              <span id="directionBadge" class="status-badge">产品 -> 开发</span>
+              <span id="sceneBadge" class="status-badge muted">场景待识别</span>
+              <span id="modelBadge" class="status-badge muted">模型待连接</span>
+            </div>
+            <div id="feedback" class="feedback" aria-live="polite"></div>
           </div>
 
-          <div id="feedback" class="feedback" aria-live="polite"></div>
-
-          <div class="result-grid">
+          <div class="board-layout">
             <article class="result-card live-card">
               <div class="card-header">
-                <h3>实时输出</h3>
+                <div>
+                  <p class="card-kicker">Raw Transcript</p>
+                  <h3>实时输出</h3>
+                </div>
                 <button id="copyButton" class="ghost-btn" type="button">复制结果</button>
               </div>
               <pre id="liveOutput" class="live-output">等待输入...</pre>
@@ -104,7 +181,10 @@
 
             <article class="result-card structured-card">
               <div class="card-header">
-                <h3>结构化视图</h3>
+                <div>
+                  <p class="card-kicker">Polished Draft</p>
+                  <h3>结构化稿件</h3>
+                </div>
               </div>
               <div id="sectionCards" class="section-cards">
                 <p class="empty-state">模型完成输出后，这里会自动整理成结构化卡片。</p>
